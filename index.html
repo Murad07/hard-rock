@@ -80,186 +80,93 @@
             </button>
           </div>
         </div>
-        <!-- === Simple results === -->
-        <!-- <div class="d-flex justify-content-center">
-          <div class="">
-            <p class="author lead">
-              <strong>Purple Noon</strong> Album by <span>Washed Out</span>
-              <button class="btn btn-success">Get Lyrics</button>
-            </p>
-            <p class="author lead">
-              <strong>Purple Noon</strong> Album by <span>Washed Out</span>
-              <button class="btn btn-success">Get Lyrics</button>
-            </p>
-            <p class="author lead">
-              <strong>Purple Noon</strong> Album by <span>Washed Out</span>
-              <button class="btn btn-success">Get Lyrics</button>
-            </p>
-            <p class="author lead">
-              <strong>Purple Noon</strong> Album by <span>Washed Out</span>
-              <button class="btn btn-success">Get Lyrics</button>
-            </p>
-            <p class="author lead">
-              <strong>Purple Noon</strong> Album by <span>Washed Out</span>
-              <button class="btn btn-success">Get Lyrics</button>
-            </p>
-          </div>
-        </div> -->
-        <!-- Single Lyrics -->
-        <!-- <div class="single-lyrics text-center">
-          <button class="btn go-back">&lsaquo;</button>
-          <h2 class="text-success mb-4">Pentatonix - Na Na Na</h2>
-          <pre class="lyric text-white">
-    Wont go whistling like the wind blows,
-    Looking out my window,
-    Just to see the shine
-    Maybe you might call it crazy,
-    How Im acting lately,
 
-    Skipping through the sky
-
-
-
-     I see so clearly,
-
-    Why Im always feeling free.
-
-    So I sleep when my dreams,
-
-    Looking like reality
-
-
-
-    (Gonna feel it! Na na na...) x4
-
-
-
-    Gonna feel it!
-
-
-
-    I know where the greener grass grows
-
-    Youll just have to follow
-
-    To the other side
-
-
-
-     Lets go tiptoe on a tight rope,
-
-    Fallings only natural
-
-    Just spread your wings and fly
-
-
-
-    Youll see so clearly,
-
-    Why Im always feeling free.
-
-    So I sleep when our dreams
-
-    Looking like reality
-
-
-
-    (Gonna feel it! Na na na...) x4
-
-
-
-    Bring it down like
-
-    Ohh way oh
-
-    Yeah yeah yeah yeah yeah yeah
-
-    Break it down like
-
-    Ohh way oh
-
-     Yeah, yeah, yeah...
-
-    All around like
-
-    Ohh way oh
-
-    Yeah, yeah, yeah...
-
-    Sing it loud like!
-
-    Ohh way oh
-
-    Ah oo oo ooo
-
-
-
-     Gonna feel it! (Na na na...)
-
-     Make it sound like! (Na na na...)
-
-    All around like! (Na na na...)
-
-    Sing it loud like! (Na na na...)
-
-    Gonna feel like! (Na na na...)
-                </pre
-          >
-        </div> -->
         <!-- === Fancy results === -->
-        <div class="search-result col-md-8 mx-auto py-4" id="searchResult">
-          <!-- single result -->
+        <div
+          class="search-result col-md-8 mx-auto py-4"
+          id="searchResult"
+        ></div>
 
-          <!-- ./ single result -->
+        <!-- Show Lyrics -->
+        <div class="single-lyrics text-center">
+          <button class="btn go-back">&lsaquo;</button>
+          <h2 class="text-success mb-4">
+            <span id="showTitle"></span> - <span id="artistName"></span>
+          </h2>
+          <pre class="lyric text-white" id="showLyric"></pre>
         </div>
       </main>
     </div>
+
     <!-- Optional JavaScript -->
     <script>
       let inputTitle = document.getElementById('title');
       const searchBtn = document.getElementById('search');
+      let songList = [];
 
+      // Search activity
       searchBtn.addEventListener('click', function () {
-        // catch the input value
         const title = inputTitle.value;
-        console.log(title);
+        songList = [];
 
-        // call api
-        const searchApi = `https://api.lyrics.ovh/suggest/${title}`;
+        if (title.length > 0) {
+          const searchApi = `https://api.lyrics.ovh/suggest/${title}`;
 
-        fetch(searchApi)
-          .then((res) => res.json())
-          .then((data) => {
-            // assign the maximum length of result to show
-            let len = data.data.length;
-            if (len > 10) len = 10;
-            console.log(data);
+          fetch(searchApi)
+            .then((res) => res.json())
+            .then((data) => {
+              // assign the maximum length of result to show
+              let len = data.data.length;
+              if (len > 10) len = 10;
 
-            // Search result list
-            const searchResult = document.getElementById('searchResult');
-            searchResult.innerHTML = '';
+              // List of Search result
+              const searchResult = document.getElementById('searchResult');
+              searchResult.innerHTML = '';
 
-            for (let i = 0; i < len; i++) {
-              const songTitle = data.data[i].title;
-              const album = data.data[i].album.title;
-              const artist = data.data[i].artist.name;
-              const id = data.data[i].id;
+              for (let i = 0; i < len; i++) {
+                const songTitle = data.data[i].title;
+                const album = data.data[i].album.title;
+                const artist = data.data[i].artist.name;
 
-              searchResult.innerHTML += `<div class="single-result row align-items-center my-3 p-3">
-            <div class="col-md-9">
-              <h3 class="lyrics-name"> ${songTitle} </h3>
-              <p class="author lead">${album} by <span>${artist}</span></p>
-            </div>
-            <div class="col-md-3 text-md-right text-center">
-              <button class="btn btn-success" onclick="showLyrics(${id})">Get Lyrics</button>
-            </div>
-          </div>`;
-            }
-          });
+                songList[i] = [i, songTitle, artist];
+
+                searchResult.innerHTML += `<div class="single-result row align-items-center my-3 p-3">
+                                            <div class="col-md-9">
+                                              <h3 class="lyrics-name"> ${songTitle} </h3>
+                                              <p class="author lead">${album} by <span>${artist}</span></p>
+                                            </div>
+                                            <div class="col-md-3 text-md-right text-center">
+                                              <button class="btn btn-success" onclick="showLyrics(${i})">Get Lyrics</button>
+                                            </div>
+                                          </div>`;
+              }
+            });
+        }
       });
 
+      // Show Lyrics after click on "Get Lyrics" button
       const showLyrics = (id) => {
-        console.log(id);
+        const title = songList[id][1];
+        const artist = songList[id][2];
+
+        const lyricApi = `https://api.lyrics.ovh/v1/${artist}/${title}`;
+
+        fetch(lyricApi)
+          .then((res) => res.json())
+          .then((data) => {
+            const showTitle = document.getElementById('showTitle');
+            showTitle.innerText = title;
+
+            const artistName = document.getElementById('artistName');
+            artistName.innerText = artist;
+
+            const showLyric = document.getElementById('showLyric');
+            let myLyrics = data.lyrics;
+            if (!myLyrics) {
+              myLyrics = 'No lyrics found!';
+            }
+            showLyric.innerText = `${myLyrics}`;
+          });
       };
     </script>
 
