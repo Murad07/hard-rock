@@ -89,10 +89,8 @@
 
         <!-- Show Lyrics -->
         <div class="single-lyrics text-center">
-          <button class="btn go-back">&lsaquo;</button>
-          <h2 class="text-success mb-4">
-            <span id="showTitle"></span> - <span id="artistName"></span>
-          </h2>
+          <!-- <button class="btn go-back">&lsaquo;</button> -->
+          <h2 class="text-success mb-4" id="songInfo"></h2>
           <pre class="lyric text-white" id="showLyric"></pre>
         </div>
       </main>
@@ -122,18 +120,22 @@
               // List of Search result
               const searchResult = document.getElementById('searchResult');
               searchResult.innerHTML = '';
-
+              console.log(data);
               for (let i = 0; i < len; i++) {
                 const songTitle = data.data[i].title;
                 const album = data.data[i].album.title;
                 const artist = data.data[i].artist.name;
+                const pic = data.data[i].artist.picture;
 
                 songList[i] = [i, songTitle, artist];
 
                 searchResult.innerHTML += `<div class="single-result row align-items-center my-3 p-3">
-                                            <div class="col-md-9">
+                                            <div class="col-md-7">
                                               <h3 class="lyrics-name"> ${songTitle} </h3>
                                               <p class="author lead">${album} by <span>${artist}</span></p>
+                                            </div>
+                                            <div class="col-md-2">
+                                              <img src="${pic}"> </img>
                                             </div>
                                             <div class="col-md-3 text-md-right text-center">
                                               <button class="btn btn-success" onclick="showLyrics(${i})">Get Lyrics</button>
@@ -154,11 +156,8 @@
         fetch(lyricApi)
           .then((res) => res.json())
           .then((data) => {
-            const showTitle = document.getElementById('showTitle');
-            showTitle.innerText = title;
-
-            const artistName = document.getElementById('artistName');
-            artistName.innerText = artist;
+            const showTitle = document.getElementById('songInfo');
+            showTitle.innerHTML = `${title} - ${artist}`;
 
             const showLyric = document.getElementById('showLyric');
             let myLyrics = data.lyrics;
